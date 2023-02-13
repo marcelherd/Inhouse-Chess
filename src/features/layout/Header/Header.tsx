@@ -84,17 +84,7 @@ export const Header: React.FC<Props> = ({ open, toggleOpen }) => {
           })}
         >
           {session ? (
-            <>
-              <NotificationsPopover />
-              <ActionIcon
-                title="Change preferences"
-                onClick={() => {
-                  void router.push("/preferences");
-                }}
-              >
-                <IconSettings size={18} />
-              </ActionIcon>
-            </>
+            <NotificationsPopover />
           ) : (
             <Button
               onClick={() => {
