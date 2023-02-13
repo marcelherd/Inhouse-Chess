@@ -34,9 +34,9 @@ export const useStyles = createStyles((theme) => ({
 
   title: {
     color: theme.colorScheme === "dark" ? theme.white : theme.black,
-    fontFamily: `Greycliff CF, ${theme.fontFamily}`,
+    fontFamily: `Signika, ${theme.fontFamily ?? "sans-serif"}`,
     fontSize: 42,
-    lineHeight: 1.2,
+    lineHeight: 1.3,
     fontWeight: 900,
 
     [theme.fn.smallerThan("xs")]: {
@@ -57,22 +57,27 @@ export const useStyles = createStyles((theme) => ({
       display: "none",
     },
   },
-
   highlight: {
+    display: "inline-block",
+    zIndex: 0,
     position: "relative",
-    backgroundColor: theme.fn.variant({
-      variant: "light",
-      color: theme.primaryColor,
-    }).background,
-    borderRadius: theme.radius.sm,
-    // padding: "4px 12px",
-    padding: 4,
+    "::before": {
+      backgroundColor: "rgba(108,99,255,0.5)",
+      content: '""',
+      position: "absolute",
+      width: "calc(100% + 4px)",
+      zIndex: -1,
+      height: "40%",
+      left: "-2px",
+      bottom: 4,
+      transform: "rotate(-1deg)",
+    },
   },
   highlightTight: {
     position: "relative",
     backgroundColor: theme.fn.variant({
       variant: "light",
-      color: theme.primaryColor,
+      color: "indigo",
     }).background,
     borderRadius: theme.radius.sm,
     padding: 2,
