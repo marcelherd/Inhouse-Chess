@@ -31,7 +31,12 @@ export const Footer: React.FC = () => {
           justify={isMobile ? "flex-start" : "center"}
           sx={{ flexGrow: 1 }}
         >
-          <Anchor component={Link} href="/contribute" size="xs" color="dimmed">
+          <Anchor
+            component={Link}
+            href="https://github.com/marcelherd/Inhouse-Chess"
+            size="xs"
+            color="dimmed"
+          >
             Contribute
           </Anchor>
           <Anchor component={Link} href="/feedback" size="xs" color="dimmed">
