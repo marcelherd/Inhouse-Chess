@@ -2,7 +2,7 @@ import { type NextPage } from "next";
 import { Title } from "@mantine/core";
 import { Layout } from "../features/layout";
 
-const Home: NextPage = () => {
+const Preferences: NextPage = () => {
   return (
     <Layout>
       <Title size="h3">Preferences</Title>
@@ -10,4 +10,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default Preferences;

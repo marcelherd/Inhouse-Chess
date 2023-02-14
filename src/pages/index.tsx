@@ -1,7 +1,6 @@
 import { type NextPage } from "next";
-import { Text, Title } from "@mantine/core";
+import { Title } from "@mantine/core";
 import { Layout } from "../features/layout";
-import { LatestGames } from "../features/games/LatestGames";
 import { About } from "../features/info/About";
 
 const Home: NextPage = () => {

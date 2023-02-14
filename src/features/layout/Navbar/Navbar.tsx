@@ -33,7 +33,7 @@ const routes: LinkProps[] = [
   {
     icon: IconUserCircle,
     label: "My Profile",
-    href: "/profile",
+    href: "/me",
     requiresAuthentication: true,
   },
   {
