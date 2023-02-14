@@ -5,6 +5,9 @@ export const calculateRatingAdjustment = (
   opponent: User,
   winner: User | null
 ) => {
+  // TODO(marcelherd): This is really not working at all and needs to be re-written from scratch,
+  //  ideally using Glicko or Glicko-2 instead of Elo.
+
   // 0 (Loss) or 0.5 (Draw) or 1 (Win)
   const result = !winner ? 0.5 : winner.id === me.id ? 1 : 0;
   const winLikelihood =

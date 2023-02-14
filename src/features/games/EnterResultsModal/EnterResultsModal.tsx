@@ -10,8 +10,9 @@ import {
   Badge,
   Avatar,
   ActionIcon,
-  Group,
   Input,
+  type MantineColor,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { useMediaQuery, useDebouncedValue } from "@mantine/hooks";
 import { IconSearch, IconX } from "@tabler/icons-react";
@@ -33,11 +34,22 @@ const getColorByResult = (result: string) => {
   return "gray";
 };
 
+const getColorByColor = (color: string, isDarkMode: boolean): MantineColor => {
+  if (isDarkMode) {
+    return color === "white" ? "gray" : "gray";
+  }
+  return color === "white" ? "gray" : "dark";
+};
+
 export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
   const [opponent, setOpponent] = useState<User | null>(null);
   const [inputValue, setInputValue] = useState("");
   const [outcome, setOutcome] = useState("loss");
+  const [color, setColor] = useState("white");
   const [debouncedOpponent] = useDebouncedValue(inputValue, 250);
+
+  const { colorScheme } = useMantineColorScheme();
+  const isDarkMode = colorScheme === "dark";
 
   const isMobile = useMediaQuery("(max-width: 767px)");
 
@@ -45,7 +57,7 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
     data: users,
     isLoading: isLoadingUsers,
     error: errorUsers,
-  } = api.users.findByName.useQuery({
+  } = api.users.findOthersByNameOrEmail.useQuery({
     value: debouncedOpponent,
   });
 
@@ -56,6 +68,7 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
       // Restore initial state, as the component is not unmounted when the modal is closed
       setOpponent(null);
       setInputValue("");
+      setColor("white");
       setOutcome("loss");
 
       showNotification({
@@ -76,10 +89,12 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
 
     // TODO(marcelherd): Error handling
     if (!opponent) return;
+    if (color !== "white" && color !== "black") return;
     if (outcome !== "win" && outcome !== "loss" && outcome !== "draw") return;
 
     createRequest.mutate({
       opponentId: opponent.id,
+      color,
       outcome,
     });
   };
@@ -147,7 +162,7 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
               value={inputValue}
               onChange={setInputValue}
               onItemSubmit={(item) => {
-                setOpponent(item as unknown as User); // TODO(marcelherd): Fix this type issue
+                setOpponent(item as unknown as User);
                 setInputValue("");
               }}
               data={opponents ?? []}
@@ -155,8 +170,39 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
               nothingFound={<Text>Not found</Text>}
               limit={5}
               rightSection={isLoadingUsers ? <Loader size={16} /> : null}
+              filter={(value, item) => {
+                const { name, email } = item as unknown as User;
+
+                if (!name || !email) return false;
+
+                return (
+                  name.toLowerCase().includes(value.toLowerCase().trim()) ||
+                  email.toLowerCase().includes(value.toLowerCase().trim())
+                );
+              }}
             />
           )}
+          <Input.Wrapper
+            required
+            label="Color"
+            description="Which color did you play?"
+          >
+            <SegmentedControl
+              fullWidth
+              size="md"
+              radius="lg"
+              sx={{ marginTop: 6 }}
+              color={getColorByColor(color, isDarkMode)}
+              transitionDuration={250}
+              transitionTimingFunction="ease"
+              value={color}
+              onChange={setColor}
+              data={[
+                { label: "White", value: "white" },
+                { label: "Black", value: "black" },
+              ]}
+            />
+          </Input.Wrapper>
           <Input.Wrapper
             required
             label="Outcome"

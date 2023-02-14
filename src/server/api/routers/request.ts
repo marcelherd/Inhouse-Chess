@@ -1,3 +1,4 @@
+import { Color } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { calculateRatingAdjustment } from "../../lib/elo";
@@ -48,6 +49,7 @@ export const requestRouter = createTRPCRouter({
     .input(
       z.object({
         opponentId: z.string(),
+        color: z.union([z.literal("white"), z.literal("black")]),
         outcome: z.union([
           z.literal("win"),
           z.literal("draw"),
@@ -57,7 +59,7 @@ export const requestRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.session;
-      const { opponentId, outcome } = input;
+      const { opponentId, color, outcome } = input;
 
       const opponent = await ctx.prisma.user.findUnique({
         where: { id: opponentId },
@@ -76,7 +78,9 @@ export const requestRouter = createTRPCRouter({
       return ctx.prisma.request.create({
         data: {
           submittedById: user.id,
+          submittedByColor: color === "white" ? Color.WHITE : Color.BLACK,
           receivedById: opponent.id,
+          receivedByColor: color === "white" ? Color.BLACK : Color.WHITE,
           proposedWinnerId: winner,
         },
       });
@@ -121,7 +125,13 @@ export const requestRouter = createTRPCRouter({
         });
       }
 
-      const { receivedBy, submittedBy, proposedWinnerId } = request;
+      const {
+        receivedBy,
+        receivedByColor,
+        submittedBy,
+        submittedByColor,
+        proposedWinnerId,
+      } = request;
 
       // I know
       const winner =
@@ -142,7 +152,9 @@ export const requestRouter = createTRPCRouter({
         data: {
           requestId: request.id,
           playerId: request.submittedById,
+          playerColor: request.submittedByColor,
           opponentId: request.receivedById,
+          opponentColor: request.receivedByColor,
           winnerId: request.proposedWinnerId,
           playedAt: request.createdAt,
           playerRating: request.submittedBy.rating,

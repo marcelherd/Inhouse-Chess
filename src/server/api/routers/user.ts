@@ -52,19 +52,32 @@ export const userRouter = createTRPCRouter({
   findOthersByNameOrEmail: protectedProcedure
     .input(z.object({ value: z.string() }))
     .query(({ ctx, input }) => {
+      const { user } = ctx.session;
       const { value } = input;
 
-      // TODO(marcelherd): Remove self
       return ctx.prisma.user.findMany({
         where: {
-          OR: [
+          AND: [
             {
-              name: {
-                contains: value,
+              NOT: {
+                id: user.id,
               },
-              email: {
-                contains: value,
-              },
+            },
+            {
+              OR: [
+                {
+                  email: {
+                    contains: value,
+                    mode: "insensitive",
+                  },
+                },
+                {
+                  name: {
+                    contains: value,
+                    mode: "insensitive",
+                  },
+                },
+              ],
             },
           ],
         },

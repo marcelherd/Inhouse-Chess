@@ -93,9 +93,11 @@ model Request {
     // If a request has been processed and no game was created, it was rejected
     processed Boolean @default(false)
 
-    submittedBy    User  @relation(name: "submittedRequests", fields: [submittedById], references: [id])
-    receivedBy     User  @relation(name: "receivedRequests", fields: [receivedById], references: [id])
-    proposedWinner User? @relation(name: "proposedWinner", fields: [proposedWinnerId], references: [id]) // if not a draw
+    submittedBy      User  @relation(name: "submittedRequests", fields: [submittedById], references: [id])
+    submittedByColor Color
+    receivedBy       User  @relation(name: "receivedRequests", fields: [receivedById], references: [id])
+    receivedByColor  Color
+    proposedWinner   User? @relation(name: "proposedWinner", fields: [proposedWinnerId], references: [id]) // if not a draw
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -112,9 +114,11 @@ model Game {
 
     request Request @relation(fields: [requestId], references: [id])
 
-    player   User  @relation(name: "gamePlayer", fields: [playerId], references: [id])
-    opponent User  @relation(name: "gameOpponent", fields: [opponentId], references: [id])
-    winner   User? @relation(name: "gameWinner", fields: [winnerId], references: [id]) // if not a draw
+    player        User  @relation(name: "gamePlayer", fields: [playerId], references: [id])
+    playerColor   Color
+    opponent      User  @relation(name: "gameOpponent", fields: [opponentId], references: [id])
+    opponentColor Color
+    winner        User? @relation(name: "gameWinner", fields: [winnerId], references: [id]) // if not a draw
 
     // When the request was created
     playedAt DateTime
@@ -137,4 +141,9 @@ enum Experience {
     BEGINNER
     ADVANCED
     EXPERT
+}
+
+enum Color {
+    WHITE
+    BLACK
 }

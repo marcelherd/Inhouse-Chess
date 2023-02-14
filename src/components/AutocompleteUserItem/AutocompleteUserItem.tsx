@@ -3,10 +3,7 @@ import type { MantineColor, SelectItemProps } from "@mantine/core";
 import { Avatar, Group, Text } from "@mantine/core";
 import { type User } from "@prisma/client";
 
-type Props = SelectItemProps &
-  User & {
-    color: MantineColor;
-  };
+type Props = SelectItemProps & User;
 
 const Item = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
