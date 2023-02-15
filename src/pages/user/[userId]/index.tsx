@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { Title, Text, Skeleton } from "@mantine/core";
+import { Text } from "@mantine/core";
 import { Layout } from "../../../features/layout";
 import { useRouter } from "next/router";
 import { api } from "../../../utils/api";
@@ -12,11 +12,11 @@ const UserProfile: NextPage = () => {
   const userId = typeof userIdParam === "string" ? userIdParam : "";
 
   const {
-    data: user,
+    data: userProfile,
     isLoading,
     isError,
     error,
-  } = api.users.findById.useQuery(
+  } = api.users.getProfileData.useQuery(
     { id: userId },
     { enabled: userId.length > 0 }
   );
@@ -35,13 +35,13 @@ const UserProfile: NextPage = () => {
   }
 
   // TODO(marcelherd): Show 404 instead
-  if (!user) {
+  if (!userProfile) {
     return <Text color="red">Not found</Text>;
   }
 
   return (
     <Layout>
-      <Profile user={user} />
+      <Profile userProfile={userProfile} />
     </Layout>
   );
 };

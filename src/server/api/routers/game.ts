@@ -25,5 +25,37 @@ export const gameRouter = createTRPCRouter({
         },
         take: limit,
       });
+    }), // Requests that have been sent to me, to which I have not yet responded
+  findByUserId: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        limit: z.number().optional(),
+      })
+    )
+    .query(({ ctx, input }) => {
+      const { userId, limit } = input;
+
+      return ctx.prisma.game.findMany({
+        where: {
+          OR: [
+            {
+              playerId: userId,
+            },
+            {
+              opponentId: userId,
+            },
+          ],
+        },
+        orderBy: {
+          playedAt: "desc",
+        },
+        include: {
+          player: true,
+          opponent: true,
+          winner: true,
+        },
+        take: limit,
+      });
     }),
 });

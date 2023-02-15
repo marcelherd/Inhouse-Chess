@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -93,5 +94,51 @@ export const userRouter = createTRPCRouter({
           ],
         },
       });
+    }),
+  getProfileData: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { id } = input;
+
+      const user = await ctx.prisma.user.findUnique({ where: { id } });
+
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User not found",
+        });
+      }
+
+      // Computed statistics
+      const games = await ctx.prisma.game.count({
+        where: {
+          OR: [{ playerId: id }, { opponentId: id }],
+        },
+      });
+
+      const wins = await ctx.prisma.game.count({
+        where: {
+          winnerId: id,
+        },
+      });
+
+      const losses = await ctx.prisma.game.count({
+        where: {
+          AND: [{ NOT: { winner: null } }, { NOT: { winnerId: id } }],
+        },
+      });
+
+      const draws = games - wins - losses;
+
+      // TODO(marcelherd): Type this as UserProfile
+      return {
+        user,
+        computed: {
+          games,
+          wins,
+          losses,
+          draws,
+        },
+      };
     }),
 });
