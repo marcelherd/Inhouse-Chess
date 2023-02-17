@@ -59,7 +59,7 @@ export const UserSection: React.FC = () => {
         <Menu.Item
           icon={<IconUserCircle size={16} />}
           onClick={() => {
-            void router.push("/profile");
+            void router.push("/me");
           }}
         >
           View Profile
