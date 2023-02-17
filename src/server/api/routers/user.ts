@@ -141,4 +141,32 @@ export const userRouter = createTRPCRouter({
         },
       };
     }),
+  finishRegistration: protectedProcedure
+    .input(
+      z.object({
+        experience: z.union([
+          z.literal("BEGINNER"),
+          z.literal("ADVANCED"),
+          z.literal("EXPERT"),
+        ]),
+        countryCode: z.string().length(2),
+        location: z.string(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      const { user } = ctx.session;
+      const { experience, countryCode, location } = input;
+
+      return ctx.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          experience,
+          countryCode,
+          location,
+          registrationFinished: true,
+        },
+      });
+    }),
 });

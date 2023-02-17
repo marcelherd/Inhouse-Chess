@@ -60,10 +60,14 @@ model User {
     registrationFinished Boolean @default(false)
 
     // Profile data
+    countryCode   String?
     location      String?
-    experience    Experience @default(BEGINNER)
-    rating        Int        @default(1200)
-    highestRating Int        @default(1200)
+    experience    Experience?
+    rating        Int         @default(1200)
+    highestRating Int         @default(1200)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 
     submittedRequests   Request[] @relation("submittedRequests")
     receivedRequests    Request[] @relation("receivedRequests")
@@ -123,9 +127,10 @@ model Game {
     // When the request was created
     playedAt DateTime
 
-    playerRating     Int
-    opponentRating   Int
-    ratingAdjustment Int
+    playerRating             Int
+    opponentRating           Int
+    playerRatingAdjustment   Int
+    opponentRatingAdjustment Int
 
     // When the request was approved
     createdAt DateTime @default(now())

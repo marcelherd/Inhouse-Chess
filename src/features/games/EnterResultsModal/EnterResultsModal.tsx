@@ -1,4 +1,4 @@
-import { FormEventHandler, useState } from "react";
+import { type FormEventHandler, useState } from "react";
 import {
   Modal,
   Button,

@@ -7,10 +7,14 @@ import {
   Button,
   Flex,
   Box,
+  MediaQuery,
 } from "@mantine/core";
 import { type UserProfile } from "../../../types/User";
 import { MatchHistory } from "../MatchHistory";
 import { PlayerStatistics } from "../PlayerStatistics";
+import { PlayerBiography } from "../PlayerBiography";
+import ReactCountryFlag from "react-country-flag";
+import { countries } from "../Registration/CountrySelect";
 
 type Props = {
   userProfile: UserProfile;
@@ -18,6 +22,10 @@ type Props = {
 
 export const Profile: React.FC<Props> = ({ userProfile }) => {
   const { user, computed } = userProfile;
+
+  const countryName = countries.find(
+    (country) => country.code === user.countryCode
+  )?.name;
 
   return (
     <>
@@ -27,7 +35,21 @@ export const Profile: React.FC<Props> = ({ userProfile }) => {
           <Text color="dimmed" size="xs">
             {user.email}
           </Text>
-          <Title size="h2">{user.name}</Title>
+          <Title size="h2">
+            {user.name}{" "}
+            {user.countryCode && (
+              <ReactCountryFlag
+                svg
+                countryCode={user.countryCode}
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  marginLeft: "8px",
+                }}
+                title={countryName}
+              />
+            )}
+          </Title>
         </Stack>
 
         <Box sx={{ flexGrow: 1 }} />
@@ -43,7 +65,13 @@ export const Profile: React.FC<Props> = ({ userProfile }) => {
         )}
       </Flex>
 
-      <PlayerStatistics statistics={computed} />
+      <MediaQuery smallerThan="md" styles={{ flexDirection: "column" }}>
+        <Group>
+          <PlayerBiography user={user} />
+          <PlayerStatistics statistics={computed} />
+        </Group>
+      </MediaQuery>
+
       <MatchHistory user={user} />
     </>
   );

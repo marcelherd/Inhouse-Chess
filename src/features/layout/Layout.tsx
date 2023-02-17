@@ -3,6 +3,7 @@ import { AppShell, Container, useMantineTheme } from "@mantine/core";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { Navbar } from "./Navbar";
+import { Registration } from "../user/Registration";
 
 type Props = {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ export const Layout: React.FC<Props> = ({ children }) => {
       }
       footer={menuOpen ? undefined : <Footer />}
     >
+      <Registration />
       <Container>{children}</Container>
     </AppShell>
   );

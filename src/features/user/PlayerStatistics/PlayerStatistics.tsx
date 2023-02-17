@@ -5,6 +5,7 @@ import {
   RingProgress,
   type MantineColor,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { type UserProfile } from "../../../types/User";
 import { useStyles } from "./PlayerStatistics.styles";
 
@@ -19,12 +20,15 @@ function getColorByWinrate(winrate: number): MantineColor {
 
 export const PlayerStatistics: React.FC<Props> = ({ statistics }) => {
   const { classes } = useStyles();
+  const showSmallWinrate = useMediaQuery(
+    "(min-width: 992px) and (max-width: 1100px)"
+  );
 
   const { games, wins, losses, draws } = statistics;
   const winrate = (wins / games) * 100;
 
   return (
-    <Card withBorder p="xl" radius="md" className={classes.card} maw={500}>
+    <Card withBorder p="xl" radius="md" className={classes.card}>
       <div className={classes.inner}>
         <div>
           <Text size="xl" className={classes.label}>
@@ -64,7 +68,7 @@ export const PlayerStatistics: React.FC<Props> = ({ statistics }) => {
           <RingProgress
             roundCaps
             thickness={6}
-            size={150}
+            size={showSmallWinrate ? 100 : 150}
             sections={[{ value: winrate, color: getColorByWinrate(winrate) }]}
             label={
               <div>
@@ -72,9 +76,9 @@ export const PlayerStatistics: React.FC<Props> = ({ statistics }) => {
                   align="center"
                   size="lg"
                   className={classes.label}
-                  sx={{ fontSize: 22 }}
+                  sx={{ fontSize: showSmallWinrate ? 16 : 22 }}
                 >
-                  {winrate.toFixed(0)}%
+                  {isNaN(winrate) ? "N/A" : `${winrate.toFixed(0)}%`}
                 </Text>
                 <Text align="center" size="xs" color="dimmed">
                   Winrate

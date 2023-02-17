@@ -125,13 +125,7 @@ export const requestRouter = createTRPCRouter({
         });
       }
 
-      const {
-        receivedBy,
-        receivedByColor,
-        submittedBy,
-        submittedByColor,
-        proposedWinnerId,
-      } = request;
+      const { receivedBy, submittedBy, proposedWinnerId } = request;
 
       // I know
       const winner =
@@ -141,11 +135,25 @@ export const requestRouter = createTRPCRouter({
           ? receivedBy
           : submittedBy;
 
+      // TODO(marcelherd): This is far from ideal.
+      //    Once we switch to a different algorithm to calculate rating adjustments,
+      //    this API should be adjusted so that there is an easy way to get the rating
+      //    adjustment for both players.
       const ratingAdjustment = calculateRatingAdjustment(
         receivedBy,
         submittedBy,
         winner
       );
+      const playerRatingAdjustment = !winner
+        ? ratingAdjustment
+        : request.submittedById === winner.id
+        ? ratingAdjustment
+        : -ratingAdjustment;
+      const opponentRatingAdjustment = !winner
+        ? ratingAdjustment
+        : request.receivedById === winner.id
+        ? ratingAdjustment
+        : -ratingAdjustment;
 
       // Commit the game
       const game = await ctx.prisma.game.create({
@@ -159,7 +167,8 @@ export const requestRouter = createTRPCRouter({
           playedAt: request.createdAt,
           playerRating: request.submittedBy.rating,
           opponentRating: request.receivedBy.rating,
-          ratingAdjustment,
+          playerRatingAdjustment,
+          opponentRatingAdjustment,
         },
       });
 
