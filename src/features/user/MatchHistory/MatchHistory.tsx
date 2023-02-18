@@ -54,9 +54,7 @@ export const MatchHistory: React.FC<Props> = ({ user }) => {
         </td>
         <td>{capitalize(playerColor)}</td>
         <td>
-          <a href={`/user/${player.id}`}>
-            {player.name} ({playerRating})
-          </a>
+          {player.name} ({playerRating})
         </td>
         <td>
           <Text variant="link" component="a" href={`/user/${opponent.id}`}>
