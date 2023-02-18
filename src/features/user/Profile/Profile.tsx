@@ -9,13 +9,13 @@ import {
   Box,
   MediaQuery,
 } from "@mantine/core";
+import { useSession } from "next-auth/react";
+import ReactCountryFlag from "react-country-flag";
 import { type UserProfile } from "../../../types/User";
 import { MatchHistory } from "../MatchHistory";
 import { PlayerStatistics } from "../PlayerStatistics";
 import { PlayerBiography } from "../PlayerBiography";
-import ReactCountryFlag from "react-country-flag";
-import { countries } from "../Registration/CountrySelect";
-import { useSession } from "next-auth/react";
+import { countries } from "../RegistrationModal/CountrySelect";
 
 type Props = {
   userProfile: UserProfile;

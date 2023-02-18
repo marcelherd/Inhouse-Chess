@@ -17,7 +17,7 @@ type ExperienceChoice = {
   label: string;
 };
 
-export const Registration: React.FC = () => {
+export const RegistrationModal: React.FC = () => {
   const { data: session, status } = useSession();
   const [opened, setOpened] = useState(false);
   const [experience, setExperience] = useState<string | null>(null);
