@@ -1,4 +1,4 @@
-import { Title, Text, Loader, Table, Paper } from "@mantine/core";
+import { Title, Text, Loader, Table, Paper, Tooltip } from "@mantine/core";
 import { type User } from "@prisma/client";
 import { format } from "date-fns";
 import { api } from "../../../utils/api";
@@ -47,7 +47,11 @@ export const MatchHistory: React.FC<Props> = ({ user }) => {
 
     return (
       <tr key={game.id}>
-        <td>{format(game.playedAt, "dd/MM/yyyy")}</td>
+        <td>
+          <Tooltip label={format(game.playedAt, "dd/MM/yyyy hh:mm:ss aaaa")}>
+            <span>{format(game.playedAt, "dd/MM/yyyy")}</span>
+          </Tooltip>
+        </td>
         <td>{capitalize(playerColor)}</td>
         <td>
           <a href={`/user/${player.id}`}>
@@ -77,7 +81,7 @@ export const MatchHistory: React.FC<Props> = ({ user }) => {
         <Table highlightOnHover withBorder verticalSpacing="md">
           <thead>
             <tr>
-              <th>Played at</th>
+              <th>Played on</th>
               <th>Played as</th>
               <th>Player</th>
               <th>Opponent</th>
