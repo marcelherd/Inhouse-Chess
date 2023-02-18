@@ -1,4 +1,12 @@
-import { Loader, Title, Text, Paper, Table } from "@mantine/core";
+import {
+  Loader,
+  Title,
+  Text,
+  Paper,
+  Table,
+  Avatar,
+  Group,
+} from "@mantine/core";
 import { api } from "../../../utils/api";
 
 export const Leaderboard: React.FC = () => {
@@ -29,9 +37,12 @@ export const Leaderboard: React.FC = () => {
       <tr key={id}>
         <td>{index + 1}</td>
         <td>
-          <Text variant="link" component="a" href={`/user/${id}`}>
-            {name}
-          </Text>
+          <Group>
+            <Avatar src={user.image} size="md" />
+            <Text variant="link" component="a" href={`/user/${id}`}>
+              {name}
+            </Text>
+          </Group>
         </td>
         <td>{rating}</td>
         <td>{games}</td>
@@ -49,7 +60,12 @@ export const Leaderboard: React.FC = () => {
         Leaderboard
       </Title>
       <Paper>
-        <Table highlightOnHover withBorder verticalSpacing="md">
+        <Table
+          highlightOnHover
+          withBorder
+          verticalSpacing="sm"
+          horizontalSpacing="sm"
+        >
           <thead>
             <tr>
               <th>Rank</th>
