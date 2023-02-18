@@ -28,7 +28,11 @@ export const Leaderboard: React.FC = () => {
     return (
       <tr key={id}>
         <td>{index + 1}</td>
-        <td>{name}</td>
+        <td>
+          <Text variant="link" component="a" href={`/user/${id}`}>
+            {name}
+          </Text>
+        </td>
         <td>{rating}</td>
         <td>{games}</td>
         <td>{wins}</td>
