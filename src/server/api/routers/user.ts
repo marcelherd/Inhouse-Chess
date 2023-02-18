@@ -95,7 +95,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  getProfileData: protectedProcedure
+  getProfileData: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
