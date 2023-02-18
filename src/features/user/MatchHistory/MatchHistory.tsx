@@ -76,7 +76,7 @@ export const MatchHistory: React.FC<Props> = ({ user }) => {
   return (
     <>
       <Title size="h3" mt="xl" mb="lg">
-        Match history
+        Match History
       </Title>
       <Paper>
         <Table highlightOnHover withBorder verticalSpacing="md">
