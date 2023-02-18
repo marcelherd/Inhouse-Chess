@@ -1,5 +1,5 @@
 import { type ForwardedRef, forwardRef } from "react";
-import type { MantineColor, SelectItemProps } from "@mantine/core";
+import { type SelectItemProps } from "@mantine/core";
 import { Avatar, Group, Text } from "@mantine/core";
 import { type User } from "@prisma/client";
 
@@ -26,4 +26,4 @@ const Item = (
   );
 };
 
-export const AutocompleteUserItem = forwardRef<HTMLDivElement, Props>(Item);
+export const UserItem = forwardRef<HTMLDivElement, Props>(Item);

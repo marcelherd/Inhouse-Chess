@@ -15,11 +15,11 @@ import {
   useMantineColorScheme,
 } from "@mantine/core";
 import { useMediaQuery, useDebouncedValue } from "@mantine/hooks";
-import { IconSearch, IconX } from "@tabler/icons-react";
+import { IconX } from "@tabler/icons-react";
 import { type User } from "@prisma/client";
-import { AutocompleteUserItem } from "../../../components/AutocompleteUserItem";
 import { api } from "../../../utils/api";
 import { showNotification } from "@mantine/notifications";
+import { AutocompleteUser } from "../../../components/AutocompleteUser";
 
 type Props = {
   opened: boolean;
@@ -80,7 +80,7 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
     },
   });
 
-  const opponents = users
+  const userSuggestions = users
     ?.filter((user) => user.name)
     ?.map((user) => ({ ...user, value: user.name as string }));
 
@@ -151,35 +151,21 @@ export const EnterResultsModal: React.FC<Props> = ({ opened, onClose }) => {
               </Badge>
             </Input.Wrapper>
           ) : (
-            <Autocomplete
+            <AutocompleteUser
               data-autofocus
               required
               label="Opponent"
               placeholder="Name or email"
               description="Who did you play against?"
-              itemComponent={AutocompleteUserItem}
-              icon={<IconSearch size={16} />}
               value={inputValue}
               onChange={setInputValue}
-              onItemSubmit={(item) => {
-                setOpponent(item as unknown as User);
+              onItemSubmit={(user) => {
+                setOpponent(user);
                 setInputValue("");
               }}
-              data={opponents ?? []}
+              data={userSuggestions ?? []}
               error={errorUsers?.message}
-              nothingFound={<Text>Not found</Text>}
-              limit={5}
-              rightSection={isLoadingUsers ? <Loader size={16} /> : null}
-              filter={(value, item) => {
-                const { name, email } = item as unknown as User;
-
-                if (!name || !email) return false;
-
-                return (
-                  name.toLowerCase().includes(value.toLowerCase().trim()) ||
-                  email.toLowerCase().includes(value.toLowerCase().trim())
-                );
-              }}
+              isLoading={isLoadingUsers}
             />
           )}
           <Input.Wrapper

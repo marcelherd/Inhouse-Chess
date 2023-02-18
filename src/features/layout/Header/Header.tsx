@@ -11,17 +11,10 @@ import {
   ActionIcon,
   useMantineColorScheme,
 } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";
-import {
-  IconSearch,
-  IconBell,
-  IconSettings,
-  IconMoonStars,
-  IconSun,
-} from "@tabler/icons-react";
+import { IconMoonStars, IconSun } from "@tabler/icons-react";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
 import { NotificationsPopover } from "./NotificationsPopover";
+import { PlayerSearch } from "./PlayerSearch";
 
 type Props = {
   open: boolean;
@@ -30,8 +23,6 @@ type Props = {
 
 export const Header: React.FC<Props> = ({ open, toggleOpen }) => {
   const { data: session } = useSession();
-  const router = useRouter();
-  const isMobile = useMediaQuery("(max-width: 576px)");
   const theme = useMantineTheme();
   // eslint-disable-next-line @typescript-eslint/unbound-method
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
@@ -62,16 +53,7 @@ export const Header: React.FC<Props> = ({ open, toggleOpen }) => {
         </MediaQuery>
         <Box sx={{ flexGrow: 1 }}>
           <Center>
-            <TextInput
-              placeholder="Search player"
-              icon={<IconSearch size={12} stroke={1.5} />}
-              mb="sm"
-              styles={{
-                input: {
-                  width: isMobile ? 200 : 420,
-                },
-              }}
-            />
+            <PlayerSearch />
           </Center>
         </Box>
         <Box

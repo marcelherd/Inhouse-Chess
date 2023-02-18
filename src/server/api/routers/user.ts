@@ -94,11 +94,15 @@ export const userRouter = createTRPCRouter({
         where: {
           OR: [
             {
-              name: {
-                contains: value,
-              },
               email: {
                 contains: value,
+                mode: "insensitive",
+              },
+            },
+            {
+              name: {
+                contains: value,
+                mode: "insensitive",
               },
             },
           ],
