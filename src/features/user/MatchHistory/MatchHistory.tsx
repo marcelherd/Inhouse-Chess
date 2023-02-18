@@ -1,4 +1,5 @@
 import { Title, Text, Loader, Table, Paper, Tooltip } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { type User } from "@prisma/client";
 import { format } from "date-fns";
 import { api } from "../../../utils/api";
@@ -9,8 +10,8 @@ type Props = {
 };
 
 export const MatchHistory: React.FC<Props> = ({ user }) => {
-  // FIXME(marcelherd): Doesn't seem to load the correct user's games.
-  //    To reproduce: go to your own match history and click on another user
+  const isMobile = useMediaQuery("(max-width: 576px)");
+
   const {
     data: games,
     isLoading,
@@ -53,9 +54,11 @@ export const MatchHistory: React.FC<Props> = ({ user }) => {
           </Tooltip>
         </td>
         <td>{capitalize(playerColor)}</td>
-        <td>
-          {player.name} ({playerRating})
-        </td>
+        {!isMobile && (
+          <td>
+            {player.name} ({playerRating})
+          </td>
+        )}
         <td>
           <Text variant="link" component="a" href={`/user/${opponent.id}`}>
             {opponent.name}
@@ -79,9 +82,9 @@ export const MatchHistory: React.FC<Props> = ({ user }) => {
         <Table highlightOnHover withBorder verticalSpacing="md">
           <thead>
             <tr>
-              <th>Played on</th>
-              <th>Played as</th>
-              <th>Player</th>
+              <th>Date</th>
+              <th>Color</th>
+              {!isMobile && <th>Player</th>}
               <th>Opponent</th>
               <th>Result</th>
             </tr>
