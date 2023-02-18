@@ -1,13 +1,13 @@
 import { type NextPage } from "next";
-import { Title } from "@mantine/core";
 import { Layout } from "../features/layout";
+import { Leaderboard } from "../features/user/Leaderboard";
 
-const Leaderboard: NextPage = () => {
+const LeaderboardPage: NextPage = () => {
   return (
     <Layout>
-      <Title size="h3">Leaderboard</Title>
+      <Leaderboard />
     </Layout>
   );
 };
 
-export default Leaderboard;
+export default LeaderboardPage;

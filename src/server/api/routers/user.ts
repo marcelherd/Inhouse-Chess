@@ -1,7 +1,51 @@
+import { type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+
+async function assembleProfileData(id: string, prisma: PrismaClient) {
+  const user = await prisma.user.findUnique({ where: { id } });
+
+  if (!user) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found",
+    });
+  }
+
+  // Computed statistics
+  const games = await prisma.game.count({
+    where: {
+      OR: [{ playerId: id }, { opponentId: id }],
+    },
+  });
+
+  const wins = await prisma.game.count({
+    where: {
+      winnerId: id,
+    },
+  });
+
+  const losses = await prisma.game.count({
+    where: {
+      AND: [{ NOT: { winner: null } }, { NOT: { winnerId: id } }],
+    },
+  });
+
+  const draws = games - wins - losses;
+
+  // TODO(marcelherd): Type this as UserProfile
+  return {
+    user,
+    computed: {
+      games,
+      wins,
+      losses,
+      draws,
+    },
+  };
+}
 
 export const userRouter = createTRPCRouter({
   findById: publicProcedure
@@ -168,5 +212,21 @@ export const userRouter = createTRPCRouter({
           registrationFinished: true,
         },
       });
+    }),
+  getTopPlayers: publicProcedure
+    .input(z.object({ limit: z.number().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { limit } = input;
+
+      const users = await ctx.prisma.user.findMany({
+        orderBy: {
+          rating: "desc",
+        },
+        take: limit ?? 10,
+      });
+
+      return Promise.all(
+        users.map((user) => assembleProfileData(user.id, ctx.prisma))
+      );
     }),
 });
