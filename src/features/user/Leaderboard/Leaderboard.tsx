@@ -11,6 +11,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import { api } from "../../../utils/api";
 
 export const Leaderboard: React.FC = () => {
+  const isMobile = useMediaQuery("(max-width: 576px)");
   const isDesktop = useMediaQuery("(min-width: 992px)");
 
   const {
@@ -41,7 +42,7 @@ export const Leaderboard: React.FC = () => {
         <td>{index + 1}</td>
         <td>
           <Group>
-            <Avatar src={user.image} size="md" />
+            {!isMobile && <Avatar src={user.image} size="md" />}
             <Text variant="link" component="a" href={`/user/${id}`}>
               {name}
             </Text>
@@ -67,7 +68,7 @@ export const Leaderboard: React.FC = () => {
           highlightOnHover
           withBorder
           verticalSpacing="sm"
-          horizontalSpacing="sm"
+          horizontalSpacing={isMobile ? "xs" : "sm"}
         >
           <thead>
             <tr>
