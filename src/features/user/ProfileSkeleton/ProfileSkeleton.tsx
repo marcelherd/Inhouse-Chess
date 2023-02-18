@@ -17,18 +17,19 @@ export const ProfileSkeleton: React.FC = () => {
         </Box>
       </Flex>
 
-      <MediaQuery smallerThan="md" styles={{ flexDirection: "column" }}>
-        <Group>
+      <Group>
+        <Skeleton height={200} radius="xl" sx={{ flex: 1 }} />
+
+        <MediaQuery smallerThan="md" styles={{ display: "none" }}>
           <Skeleton height={200} radius="xl" sx={{ flex: 1 }} />
-          <Skeleton height={200} radius="xl" sx={{ flex: 1 }} />
-        </Group>
-      </MediaQuery>
+        </MediaQuery>
+      </Group>
 
       <Skeleton
         width="100%"
         height={200}
         radius="xl"
-        mt={74}
+        mt="xl"
         sx={{ flex: 1 }}
       />
     </>
