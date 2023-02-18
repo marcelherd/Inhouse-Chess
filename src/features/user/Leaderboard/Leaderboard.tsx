@@ -7,9 +7,12 @@ import {
   Avatar,
   Group,
 } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { api } from "../../../utils/api";
 
 export const Leaderboard: React.FC = () => {
+  const isDesktop = useMediaQuery("(min-width: 992px)");
+
   const {
     data: profiles,
     isLoading,
@@ -46,9 +49,9 @@ export const Leaderboard: React.FC = () => {
         </td>
         <td>{rating}</td>
         <td>{games}</td>
-        <td>{wins}</td>
-        <td>{losses}</td>
-        <td>{draws}</td>
+        {isDesktop && <td>{wins}</td>}
+        {isDesktop && <td>{losses}</td>}
+        {isDesktop && <td>{draws}</td>}
         <td>{isNaN(winrate) ? "N/A" : `${winrate}%`}</td>
       </tr>
     );
@@ -71,10 +74,10 @@ export const Leaderboard: React.FC = () => {
               <th>Rank</th>
               <th>Player</th>
               <th>Rating</th>
-              <th>Games played</th>
-              <th>Wins</th>
-              <th>Losses</th>
-              <th>Draws</th>
+              <th>Games</th>
+              {isDesktop && <th>Wins</th>}
+              {isDesktop && <th>Losses</th>}
+              {isDesktop && <th>Draws</th>}
               <th>Winrate</th>
             </tr>
           </thead>
