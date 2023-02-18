@@ -15,6 +15,7 @@ import { PlayerStatistics } from "../PlayerStatistics";
 import { PlayerBiography } from "../PlayerBiography";
 import ReactCountryFlag from "react-country-flag";
 import { countries } from "../Registration/CountrySelect";
+import { useSession } from "next-auth/react";
 
 type Props = {
   userProfile: UserProfile;
@@ -22,6 +23,8 @@ type Props = {
 
 export const Profile: React.FC<Props> = ({ userProfile }) => {
   const { user, computed } = userProfile;
+
+  const { data: session } = useSession();
 
   const countryName = countries.find(
     (country) => country.code === user.countryCode
@@ -54,7 +57,7 @@ export const Profile: React.FC<Props> = ({ userProfile }) => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {user.email && (
+        {session && user.email && (
           <Button
             component="a"
             href={`mailto:${user.email}`}
