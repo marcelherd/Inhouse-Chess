@@ -60,14 +60,26 @@ export const PlayerCard: React.FC<Props> = ({ user }) => {
         )}
       </Group>
 
-      <Button
-        component="a"
-        variant="default"
-        fullWidth
-        href={`/user/${user.id}`}
-      >
-        View Profile
-      </Button>
+      <Group>
+        {user.email && (
+          <Button
+            component="a"
+            variant="default"
+            href={`mailto:${user.email}`}
+            sx={{ flex: 1 }}
+          >
+            Challenge
+          </Button>
+        )}
+        <Button
+          component="a"
+          variant="light"
+          href={`/user/${user.id}`}
+          sx={{ flex: 1 }}
+        >
+          View Profile
+        </Button>
+      </Group>
     </Paper>
   );
 };
