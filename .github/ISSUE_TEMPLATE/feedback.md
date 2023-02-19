@@ -1,7 +1,7 @@
 ---
 name: Feedback
 about: Suggest an idea for this project
-title: "[FEEDBACK] Short summary"
+title: "Short summary of your feedback"
 labels: feedback
 assignees: marcelherd
 
