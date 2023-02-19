@@ -30,7 +30,11 @@ async function assembleProfileData(id: string, prisma: PrismaClient) {
 
   const losses = await prisma.game.count({
     where: {
-      AND: [{ NOT: { winner: null } }, { NOT: { winnerId: id } }],
+      AND: [
+        { NOT: { winner: null } },
+        { NOT: { winnerId: id } },
+        { OR: [{ playerId: id }, { opponentId: id }] },
+      ],
     },
   });
 
@@ -158,37 +162,7 @@ export const userRouter = createTRPCRouter({
         });
       }
 
-      // Computed statistics
-      const games = await ctx.prisma.game.count({
-        where: {
-          OR: [{ playerId: id }, { opponentId: id }],
-        },
-      });
-
-      const wins = await ctx.prisma.game.count({
-        where: {
-          winnerId: id,
-        },
-      });
-
-      const losses = await ctx.prisma.game.count({
-        where: {
-          AND: [{ NOT: { winner: null } }, { NOT: { winnerId: id } }],
-        },
-      });
-
-      const draws = games - wins - losses;
-
-      // TODO(marcelherd): Type this as UserProfile
-      return {
-        user,
-        computed: {
-          games,
-          wins,
-          losses,
-          draws,
-        },
-      };
+      return assembleProfileData(user.id, ctx.prisma);
     }),
   finishRegistration: protectedProcedure
     .input(
