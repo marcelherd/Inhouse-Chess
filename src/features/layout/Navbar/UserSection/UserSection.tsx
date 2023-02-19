@@ -4,6 +4,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import {
   IconChevronRight,
   IconLogout,
+  IconPencil,
   IconSettings,
   IconUserCircle,
 } from "@tabler/icons-react";
@@ -64,12 +65,10 @@ export const UserSection: React.FC = () => {
         >
           View Profile
         </Menu.Item>
-        <Menu.Item
-          icon={<IconSettings size={16} />}
-          onClick={() => {
-            void router.push("/preferences");
-          }}
-        >
+        <Menu.Item icon={<IconPencil size={16} />} disabled>
+          Edit Profile
+        </Menu.Item>
+        <Menu.Item icon={<IconSettings size={16} />} disabled>
           Edit Preferences
         </Menu.Item>
         <Menu.Item
