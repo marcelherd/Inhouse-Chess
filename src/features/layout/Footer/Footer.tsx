@@ -34,12 +34,21 @@ export const Footer: React.FC = () => {
           <Anchor
             component={Link}
             href="https://github.com/marcelherd/Inhouse-Chess"
+            target="_blank"
+            rel="noopener noreferrer"
             size="xs"
             color="dimmed"
           >
             Contribute
           </Anchor>
-          <Anchor component={Link} href="/feedback" size="xs" color="dimmed">
+          <Anchor
+            component={Link}
+            href="https://github.com/marcelherd/Inhouse-Chess/issues/new?assignees=marcelherd&labels=feedback&template=feedback.md&title=Short+summary+of+your+feedback"
+            target="_blank"
+            rel="noopener noreferrer"
+            size="xs"
+            color="dimmed"
+          >
             Feedback
           </Anchor>
         </Flex>
@@ -47,6 +56,8 @@ export const Footer: React.FC = () => {
           <Anchor
             component={Link}
             href="https://www.linkedin.com/in/marcel-herd-656514259/"
+            target="_blank"
+            rel="noopener noreferrer"
             size="xs"
             color="dimmed"
           >
