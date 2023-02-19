@@ -8,8 +8,11 @@ import {
   Flex,
   Box,
   MediaQuery,
+  Menu,
+  ActionIcon,
 } from "@mantine/core";
 import { useSession } from "next-auth/react";
+import { IconDotsVertical, IconPencil } from "@tabler/icons-react";
 import ReactCountryFlag from "react-country-flag";
 import { type UserProfile } from "../../../types/User";
 import { MatchHistory } from "../MatchHistory";
@@ -57,7 +60,7 @@ export const Profile: React.FC<Props> = ({ userProfile }) => {
 
         <Box sx={{ flexGrow: 1 }} />
 
-        {session && user.email && (
+        {session && session.user.id !== user.id && user.email && (
           <Button
             component="a"
             href={`mailto:${user.email}`}
@@ -65,6 +68,21 @@ export const Profile: React.FC<Props> = ({ userProfile }) => {
           >
             Challenge
           </Button>
+        )}
+
+        {session && session.user.id === user.id && (
+          <Menu position="bottom-end">
+            <Menu.Target>
+              <ActionIcon sx={{ alignSelf: "flex-end" }}>
+                <IconDotsVertical size={16} stroke={1.5} />
+              </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item icon={<IconPencil size={16} stroke={1.5} />} disabled>
+                Edit Profile
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
         )}
       </Flex>
 
