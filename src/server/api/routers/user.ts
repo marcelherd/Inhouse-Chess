@@ -198,6 +198,20 @@ export const userRouter = createTRPCRouter({
       const { limit } = input;
 
       const users = await ctx.prisma.user.findMany({
+        where: {
+          OR: [
+            {
+              playedGames: {
+                some: {},
+              },
+            },
+            {
+              playedAgainstGames: {
+                some: {},
+              },
+            },
+          ],
+        },
         orderBy: {
           rating: "desc",
         },
