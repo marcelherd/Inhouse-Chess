@@ -1,6 +1,7 @@
 import { type PrismaClient } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { shuffleArray } from "../../../utils/array";
 
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
@@ -232,5 +233,44 @@ export const userRouter = createTRPCRouter({
       return Promise.all(
         users.map((user) => assembleProfileData(user.id, ctx.prisma))
       );
+    }),
+  findOtherUsersByLocation: protectedProcedure
+    .input(
+      z.object({
+        location: z.string(),
+        limit: z.number().optional(),
+        shuffleUsers: z.boolean().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { user } = ctx.session;
+      const { location, limit, shuffleUsers } = input;
+
+      // Find users at the given location other than self
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          AND: [{ location }, { NOT: { id: user.id } }],
+        },
+      });
+
+      const usersWithGamesPlayed = await Promise.all(
+        users.map(async (user) => {
+          const gamesPlayed = await ctx.prisma.game.count({
+            where: { OR: [{ playerId: user.id }, { opponentId: user.id }] },
+          });
+          return {
+            ...user,
+            gamesPlayed,
+          };
+        })
+      );
+
+      // TODO(marcelherd): This shuffles the array in-place, but I prefer working
+      //    with immutable data types.
+      if (shuffleUsers) shuffleArray(usersWithGamesPlayed);
+
+      if (limit) return usersWithGamesPlayed.slice(0, limit);
+
+      return usersWithGamesPlayed;
     }),
 });

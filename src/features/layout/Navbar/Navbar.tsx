@@ -39,7 +39,7 @@ const routes: LinkProps[] = [
   {
     icon: IconUserSearch,
     label: "Find Players",
-    href: "/search",
+    href: "/find",
     requiresAuthentication: true,
   },
   {
