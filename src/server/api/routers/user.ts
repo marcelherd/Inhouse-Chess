@@ -247,4 +247,26 @@ export const userRouter = createTRPCRouter({
 
       return usersWithGamesPlayed;
     }),
+  findLocationData: publicProcedure
+    .input(
+      z.object({
+        value: z.string(),
+      })
+    )
+    .query(({ ctx, input }) => {
+      const { value } = input;
+
+      return ctx.prisma.user.groupBy({
+        by: ["location"],
+        where: {
+          location: {
+            contains: value,
+            mode: "insensitive",
+          },
+        },
+        _count: {
+          location: true,
+        },
+      });
+    }),
 });

@@ -1,16 +1,11 @@
 import { useEffect, useState, type FormEventHandler } from "react";
-import {
-  Modal,
-  Stack,
-  Button,
-  Text,
-  Select,
-  Autocomplete,
-} from "@mantine/core";
 import { useSession } from "next-auth/react";
-import { CountrySelect } from "./CountrySelect";
+import { Modal, Stack, Button, Text, Select } from "@mantine/core";
+import { useDebouncedValue } from "@mantine/hooks";
 import { type Experience } from "@prisma/client";
+import { CountrySelect } from "./CountrySelect";
 import { api } from "../../../utils/api";
+import { AutocompleteLocation } from "../../../components/AutocompleteLocation";
 
 type ExperienceChoice = {
   value: Experience;
@@ -22,7 +17,8 @@ export const RegistrationModal: React.FC = () => {
   const [opened, setOpened] = useState(false);
   const [experience, setExperience] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState<string | null>(null);
-  const [location, setLocation] = useState<string | undefined>();
+  const [locationInput, setLocationInput] = useState("");
+  const [debouncedLocation] = useDebouncedValue(locationInput, 250);
 
   const utils = api.useContext();
 
@@ -32,6 +28,20 @@ export const RegistrationModal: React.FC = () => {
       setOpened(false);
     },
   });
+
+  const {
+    data: locationData,
+    isLoading: isLoadingLocationData,
+    error: errorLocationData,
+  } = api.users.findLocationData.useQuery({ value: debouncedLocation });
+
+  const locationSuggestions = locationData
+    ?.filter((locationDatum) => locationDatum.location)
+    .map((locationDatum) => ({
+      ...locationDatum,
+      value: locationDatum.location as string,
+      users: locationDatum._count.location,
+    }));
 
   const experienceChoices: ExperienceChoice[] = [
     { value: "BEGINNER", label: "Beginner" },
@@ -55,12 +65,12 @@ export const RegistrationModal: React.FC = () => {
       experience !== "EXPERT"
     )
       return;
-    if (!countryCode || !location) return;
+    if (!countryCode) return;
 
     finishRegistration.mutate({
       experience,
       countryCode,
-      location,
+      location: locationInput,
     });
   };
 
@@ -91,14 +101,19 @@ export const RegistrationModal: React.FC = () => {
             onChange={setExperience}
           />
           <CountrySelect value={countryCode} onChange={setCountryCode} />
-          <Autocomplete
+          <AutocompleteLocation
             required
             label="Location"
             placeholder="E.g. the building you work in"
             description="Where would you play chess with others? This is used to find other players at your location."
-            data={[]}
-            value={location}
-            onChange={setLocation}
+            data={locationSuggestions ?? []}
+            value={locationInput}
+            onChange={setLocationInput}
+            onItemSubmit={(item) => {
+              setLocationInput(item.value);
+            }}
+            error={errorLocationData?.message}
+            isLoading={isLoadingLocationData}
           />
           <Button type="submit" mt="sm">
             Finish registration
