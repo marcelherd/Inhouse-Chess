@@ -247,22 +247,28 @@ export const userRouter = createTRPCRouter({
 
       return usersWithGamesPlayed;
     }),
-  findLocationData: publicProcedure
+  findLocationData: protectedProcedure
     .input(
       z.object({
         value: z.string(),
       })
     )
     .query(({ ctx, input }) => {
+      const { user } = ctx.session;
       const { value } = input;
 
       return ctx.prisma.user.groupBy({
         by: ["location"],
         where: {
-          location: {
-            contains: value,
-            mode: "insensitive",
-          },
+          AND: [
+            {
+              location: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+            { NOT: { id: user.id } },
+          ],
         },
         _count: {
           location: true,
