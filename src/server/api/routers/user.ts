@@ -174,11 +174,13 @@ export const userRouter = createTRPCRouter({
         ]),
         countryCode: z.string().length(2),
         location: z.string(),
+        department: z.string(),
+        tags: z.array(z.string()),
       })
     )
     .mutation(({ ctx, input }) => {
       const { user } = ctx.session;
-      const { experience, countryCode, location } = input;
+      const { experience, countryCode, location, department, tags } = input;
 
       return ctx.prisma.user.update({
         where: {
@@ -188,6 +190,8 @@ export const userRouter = createTRPCRouter({
           experience,
           countryCode,
           location,
+          department,
+          tags,
           registrationFinished: true,
         },
       });

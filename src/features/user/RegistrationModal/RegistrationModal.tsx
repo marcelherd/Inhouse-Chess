@@ -1,11 +1,21 @@
 import { useEffect, useState, type FormEventHandler } from "react";
 import { useSession } from "next-auth/react";
-import { Modal, Stack, Button, Text, Select } from "@mantine/core";
+import {
+  Modal,
+  Stack,
+  Button,
+  Text,
+  Select,
+  Autocomplete,
+  MultiSelect,
+  TextInput,
+} from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { type Experience } from "@prisma/client";
 import { CountrySelect } from "./CountrySelect";
 import { api } from "../../../utils/api";
 import { AutocompleteLocation } from "../../../components/AutocompleteLocation";
+import { capitalize } from "../../../utils/string";
 
 type ExperienceChoice = {
   value: Experience;
@@ -17,6 +27,8 @@ export const RegistrationModal: React.FC = () => {
   const [opened, setOpened] = useState(false);
   const [experience, setExperience] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState<string | null>(null);
+  const [department, setDepartment] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const [locationInput, setLocationInput] = useState("");
   const [debouncedLocation] = useDebouncedValue(locationInput, 250);
 
@@ -25,6 +37,12 @@ export const RegistrationModal: React.FC = () => {
   const finishRegistration = api.users.finishRegistration.useMutation({
     onSuccess: () => {
       void utils.users.invalidate();
+
+      // Hacky way to update the session so we don't open up the modal again.
+      // See also: https://stackoverflow.com/a/70405437/4409162
+      const event = new Event("visibilitychange");
+      document.dispatchEvent(event);
+
       setOpened(false);
     },
   });
@@ -70,6 +88,8 @@ export const RegistrationModal: React.FC = () => {
     finishRegistration.mutate({
       experience,
       countryCode,
+      department,
+      tags,
       location: locationInput,
     });
   };
@@ -114,6 +134,31 @@ export const RegistrationModal: React.FC = () => {
             }}
             error={errorLocationData?.message}
             isLoading={isLoadingLocationData}
+          />
+          <TextInput
+            required
+            minLength={3}
+            label="Department"
+            placeholder="E.g. Cloud Services"
+            description="Which department do you work in? Don't use codes!"
+            value={department}
+            onChange={(event) => setDepartment(event.currentTarget.value)}
+          />
+          <MultiSelect
+            searchable
+            creatable
+            clearable
+            getCreateLabel={(query) => `Add "${query}"`}
+            label="Skills & Technologies"
+            description="What kind of skills and technologies can you share with your coworkers?"
+            placeholder="E.g. Azure, Powershell, SQL"
+            data={tags}
+            onCreate={(tag) => {
+              setTags((old) => [...old, tag]);
+              return tag;
+            }}
+            value={tags}
+            onChange={setTags}
           />
           <Button type="submit" mt="sm">
             Finish registration

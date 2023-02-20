@@ -26,7 +26,7 @@ export const PlayerCard: React.FC<Props> = ({ user }) => {
         {user.name}
       </Text>
       <Text align="center" color="dimmed" size="sm">
-        {user.email}
+        {user.department}
       </Text>
 
       <Group my="xl" spacing="xl" sx={{ justifyContent: "center" }}>

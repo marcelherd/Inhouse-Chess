@@ -39,7 +39,7 @@ export const Profile: React.FC<Props> = ({ userProfile }) => {
         <Avatar src={user.image} size="lg" mr="sm" />
         <Stack spacing={0}>
           <Text color="dimmed" size="xs">
-            {user.email}
+            {user.department ?? "N/A"}
           </Text>
           <Title size="h2">
             {user.name}{" "}
