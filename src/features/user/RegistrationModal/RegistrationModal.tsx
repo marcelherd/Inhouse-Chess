@@ -148,6 +148,7 @@ export const RegistrationModal: React.FC = () => {
             searchable
             creatable
             clearable
+            maxSelectedValues={5}
             getCreateLabel={(query) => `Add "${query}"`}
             label="Skills & Technologies"
             description="What kind of skills and technologies can you share with your coworkers?"

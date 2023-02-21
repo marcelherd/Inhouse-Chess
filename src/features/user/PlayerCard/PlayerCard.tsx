@@ -1,4 +1,12 @@
-import { Paper, Avatar, Text, Button, Stack, Group } from "@mantine/core";
+import {
+  Paper,
+  Avatar,
+  Text,
+  Button,
+  Stack,
+  Group,
+  Badge,
+} from "@mantine/core";
 import { type User } from "@prisma/client";
 import { capitalize } from "../../../utils/string";
 
@@ -29,7 +37,23 @@ export const PlayerCard: React.FC<Props> = ({ user }) => {
         {user.department}
       </Text>
 
-      <Group my="xl" spacing="xl" sx={{ justifyContent: "center" }}>
+      <Group
+        mt="sm"
+        spacing="xs"
+        sx={{ justifyContent: "center", flexWrap: "nowrap" }}
+      >
+        {user.tags.map((tag, index) => (
+          <Badge
+            key={index}
+            size="md"
+            styles={{ root: { textTransform: "none" } }}
+          >
+            {tag}
+          </Badge>
+        ))}
+      </Group>
+
+      <Group my="lg" spacing="xl" sx={{ justifyContent: "center" }}>
         <Stack spacing={0}>
           <Text align="center" size="lg" weight={500}>
             {user.gamesPlayed}
