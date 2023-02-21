@@ -125,7 +125,7 @@ export const RegistrationModal: React.FC = () => {
             required
             label="Location"
             placeholder="E.g. the building you work in"
-            description="Where would you play chess with others? This is used to find other players at your location."
+            description="In which building do you work?"
             data={locationSuggestions ?? []}
             value={locationInput}
             onChange={setLocationInput}
