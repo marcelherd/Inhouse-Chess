@@ -124,7 +124,7 @@ export const RegistrationModal: React.FC = () => {
           <AutocompleteLocation
             required
             label="Location"
-            placeholder="E.g. the building you work in"
+            placeholder="E.g. PGS"
             description="In which building do you work?"
             data={locationSuggestions ?? []}
             value={locationInput}
