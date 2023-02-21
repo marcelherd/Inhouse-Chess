@@ -261,9 +261,12 @@ export const userRouter = createTRPCRouter({
       //    with immutable data types.
       if (shuffleUsers) shuffleArray(usersWithGamesPlayed);
 
-      if (limit) return usersWithGamesPlayed.slice(0, limit);
-
-      return usersWithGamesPlayed;
+      return {
+        users: limit
+          ? usersWithGamesPlayed.slice(0, limit)
+          : usersWithGamesPlayed,
+        total: users.length,
+      };
     }),
   findLocationData: protectedProcedure
     .input(

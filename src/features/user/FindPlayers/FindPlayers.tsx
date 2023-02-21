@@ -1,4 +1,4 @@
-import { Title, Text, Loader, Button, Flex } from "@mantine/core";
+import { Title, Text, Loader, Button, Flex, Badge, Box } from "@mantine/core";
 import { IconArrowsShuffle } from "@tabler/icons-react";
 import { useSession } from "next-auth/react";
 import { api } from "../../../utils/api";
@@ -15,7 +15,7 @@ export const FindPlayers: React.FC = () => {
   //    location, regardless of the provided limit. This would allow us to hide the
   //    shuffle button, if the number of users at this location is equal to the limit.
   const {
-    data: users,
+    data: usersByLocation,
     isLoading,
     isError,
     error,
@@ -40,11 +40,21 @@ export const FindPlayers: React.FC = () => {
     return <Text color="red">{error.message}</Text>;
   }
 
+  const { users, total } = usersByLocation;
+
   return (
     <>
       <Title size="h3" mb="lg">
         Find Players
       </Title>
+
+      <Flex mb="md">
+        <Badge>Location: {location}</Badge>
+        <Box sx={{ flexGrow: 1 }} />
+        <Text color="dimmed" size="sm">
+          {total} other players at your location
+        </Text>
+      </Flex>
 
       <Flex gap="md" wrap="wrap">
         {users.map((user) => (
