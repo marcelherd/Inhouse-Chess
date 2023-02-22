@@ -7,6 +7,7 @@ import { PlayerCard } from "../PlayerCard";
 export const FindPlayers: React.FC = () => {
   const { data: session } = useSession();
   const location = session?.user.location ?? "";
+  const availability = session?.user.availability ?? [];
   const limit = 4;
 
   const utils = api.useContext();
@@ -20,7 +21,7 @@ export const FindPlayers: React.FC = () => {
     isError,
     error,
   } = api.users.findOtherUsersByLocation.useQuery(
-    { location, limit, shuffleUsers: true },
+    { location, limit, availability, shuffleUsers: true },
     {
       enabled: location.length > 0,
       refetchOnMount: false,
@@ -48,9 +49,17 @@ export const FindPlayers: React.FC = () => {
         Find Players
       </Title>
 
-      <Flex mb="md">
+      <Flex mb="md" wrap="wrap" gap="sm">
         <Badge>Location: {location}</Badge>
-        <Box sx={{ flexGrow: 1 }} />
+        <Badge>
+          Availability:{" "}
+          {availability.length > 0 ? availability.join(", ") : "none"}
+        </Badge>
+        <Box
+          sx={{
+            flexGrow: 1,
+          }}
+        />
         <Text color="dimmed" size="sm">
           {total} other players at your location
         </Text>
@@ -62,7 +71,7 @@ export const FindPlayers: React.FC = () => {
         ))}
       </Flex>
 
-      {users.length === 0 && <Text>No other players at this location</Text>}
+      {users.length === 0 && <Text>No results found</Text>}
 
       {users.length === limit && (
         <Button

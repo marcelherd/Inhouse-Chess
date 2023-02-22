@@ -60,11 +60,12 @@ model User {
     registrationFinished Boolean @default(false)
 
     // Profile data
-    countryCode String?
-    location    String?
-    experience  Experience?
-    department  String?
-    tags        String[]
+    availability String[]
+    countryCode  String?
+    location     String?
+    experience   Experience?
+    department   String?
+    tags         String[]
 
     rating        Int @default(1200)
     highestRating Int @default(1200)

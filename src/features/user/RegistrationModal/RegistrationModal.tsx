@@ -9,6 +9,8 @@ import {
   Autocomplete,
   MultiSelect,
   TextInput,
+  Input,
+  Chip,
 } from "@mantine/core";
 import { useDebouncedValue } from "@mantine/hooks";
 import { type Experience } from "@prisma/client";
@@ -16,6 +18,7 @@ import { CountrySelect } from "./CountrySelect";
 import { api } from "../../../utils/api";
 import { AutocompleteLocation } from "../../../components/AutocompleteLocation";
 import { capitalize } from "../../../utils/string";
+import { AutocompleteDepartment } from "../../../components/AutocompleteDepartment";
 
 type ExperienceChoice = {
   value: Experience;
@@ -25,12 +28,16 @@ type ExperienceChoice = {
 export const RegistrationModal: React.FC = () => {
   const { data: session, status } = useSession();
   const [opened, setOpened] = useState(false);
+
+  // TODO(marcelherd): Leverage Mantine's form library or react-hook-form
   const [experience, setExperience] = useState<string | null>(null);
   const [countryCode, setCountryCode] = useState<string | null>(null);
-  const [department, setDepartment] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [availability, setAvailability] = useState<string[]>([]);
   const [locationInput, setLocationInput] = useState("");
   const [debouncedLocation] = useDebouncedValue(locationInput, 250);
+  const [departmentInput, setDepartmentInput] = useState("");
+  const [debouncedDepartment] = useDebouncedValue(departmentInput, 250);
 
   const utils = api.useContext();
 
@@ -46,6 +53,20 @@ export const RegistrationModal: React.FC = () => {
       setOpened(false);
     },
   });
+
+  const {
+    data: departmentData,
+    isLoading: isLoadingDepartmentData,
+    error: errorDepartmentData,
+  } = api.users.findDepartmentData.useQuery({ value: debouncedDepartment });
+
+  const departmentSuggestions = departmentData
+    ?.filter((departmentDatum) => departmentDatum.department)
+    .map((departmentDatum) => ({
+      ...departmentDatum,
+      value: departmentDatum.department as string,
+      users: departmentDatum._count.department,
+    }));
 
   const {
     data: locationData,
@@ -86,9 +107,10 @@ export const RegistrationModal: React.FC = () => {
     if (!countryCode) return;
 
     finishRegistration.mutate({
+      availability,
       experience,
       countryCode,
-      department,
+      department: departmentInput,
       tags,
       location: locationInput,
     });
@@ -111,6 +133,34 @@ export const RegistrationModal: React.FC = () => {
           <Text>
             We need a few more details to finish setting up your profile.
           </Text>
+          <Input.Wrapper
+            label="Availability"
+            description="On which days are you in the office and available to play?"
+          >
+            <Chip.Group
+              multiple
+              value={availability}
+              onChange={setAvailability}
+              mt="xs"
+              sx={{ gap: 4 }}
+            >
+              <Chip value="mon" variant="filled" size="sm" radius="sm">
+                Mon
+              </Chip>
+              <Chip value="tue" variant="filled" size="sm" radius="sm">
+                Tue
+              </Chip>
+              <Chip value="wed" variant="filled" size="sm" radius="sm">
+                Wed
+              </Chip>
+              <Chip value="thu" variant="filled" size="sm" radius="sm">
+                Thu
+              </Chip>
+              <Chip value="fri" variant="filled" size="sm" radius="sm">
+                Fri
+              </Chip>
+            </Chip.Group>
+          </Input.Wrapper>
           <Select
             required
             label="Experience"
@@ -135,14 +185,20 @@ export const RegistrationModal: React.FC = () => {
             error={errorLocationData?.message}
             isLoading={isLoadingLocationData}
           />
-          <TextInput
+          <AutocompleteDepartment
             required
             minLength={3}
             label="Department"
             placeholder="E.g. Cloud Services"
             description="Which department do you work in? Don't use codes!"
-            value={department}
-            onChange={(event) => setDepartment(event.currentTarget.value)}
+            data={departmentSuggestions ?? []}
+            value={departmentInput}
+            onChange={setDepartmentInput}
+            onItemSubmit={(item) => {
+              setDepartmentInput(item.value);
+            }}
+            error={errorDepartmentData?.message}
+            isLoading={isLoadingDepartmentData}
           />
           <MultiSelect
             searchable

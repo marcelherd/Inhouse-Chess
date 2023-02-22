@@ -167,6 +167,7 @@ export const userRouter = createTRPCRouter({
   finishRegistration: protectedProcedure
     .input(
       z.object({
+        availability: z.array(z.string()),
         experience: z.union([
           z.literal("BEGINNER"),
           z.literal("ADVANCED"),
@@ -180,13 +181,21 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(({ ctx, input }) => {
       const { user } = ctx.session;
-      const { experience, countryCode, location, department, tags } = input;
+      const {
+        availability,
+        experience,
+        countryCode,
+        location,
+        department,
+        tags,
+      } = input;
 
       return ctx.prisma.user.update({
         where: {
           id: user.id,
         },
         data: {
+          availability,
           experience,
           countryCode,
           location,
@@ -226,22 +235,68 @@ export const userRouter = createTRPCRouter({
         users.map((user) => assembleProfileData(user.id, ctx.prisma))
       );
     }),
+  getTopPlayersByDepartment: publicProcedure
+    .input(z.object({ department: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { department } = input;
+
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          AND: [
+            { department },
+            {
+              OR: [
+                {
+                  playedGames: {
+                    some: {},
+                  },
+                },
+                {
+                  playedAgainstGames: {
+                    some: {},
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        orderBy: {
+          rating: "desc",
+        },
+      });
+
+      return Promise.all(
+        users.map((user) => assembleProfileData(user.id, ctx.prisma))
+      );
+    }),
   findOtherUsersByLocation: protectedProcedure
     .input(
       z.object({
         location: z.string(),
+        availability: z.array(z.string()).optional(),
         limit: z.number().optional(),
         shuffleUsers: z.boolean().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { user } = ctx.session;
-      const { location, limit, shuffleUsers } = input;
+      const { availability, location, limit, shuffleUsers } = input;
 
-      // Find users at the given location other than self
-      const users = await ctx.prisma.user.findMany({
+      // Count users at the given location other than self
+      const total = await ctx.prisma.user.count({
         where: {
           AND: [{ location }, { NOT: { id: user.id } }],
+        },
+      });
+
+      // Find users at the given location other than self with matching availability
+      const users = await ctx.prisma.user.findMany({
+        where: {
+          AND: [
+            { location },
+            { NOT: { id: user.id } },
+            { availability: { hasSome: availability } },
+          ],
         },
       });
 
@@ -265,7 +320,7 @@ export const userRouter = createTRPCRouter({
         users: limit
           ? usersWithGamesPlayed.slice(0, limit)
           : usersWithGamesPlayed,
-        total: users.length,
+        total: total,
       };
     }),
   findLocationData: protectedProcedure
@@ -293,6 +348,30 @@ export const userRouter = createTRPCRouter({
         },
         _count: {
           location: true,
+        },
+      });
+    }),
+  findDepartmentData: protectedProcedure
+    .input(z.object({ value: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { user } = ctx.session;
+      const { value } = input;
+
+      return ctx.prisma.user.groupBy({
+        by: ["department"],
+        _count: {
+          department: true,
+        },
+        where: {
+          AND: [
+            {
+              department: {
+                contains: value,
+                mode: "insensitive",
+              },
+            },
+            { NOT: { id: user.id } },
+          ],
         },
       });
     }),

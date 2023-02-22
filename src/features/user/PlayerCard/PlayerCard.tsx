@@ -46,6 +46,7 @@ export const PlayerCard: React.FC<Props> = ({ user }) => {
           <Badge
             key={index}
             size="md"
+            color="gray"
             styles={{ root: { textTransform: "none" } }}
           >
             {tag}

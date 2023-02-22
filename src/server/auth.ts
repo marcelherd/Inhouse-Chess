@@ -21,6 +21,8 @@ declare module "next-auth" {
       id: string;
       registrationFinished: boolean;
       location?: string;
+      department?: string;
+      availability?: string[];
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -29,6 +31,8 @@ declare module "next-auth" {
   interface User {
     registrationFinished: boolean;
     location?: string;
+    department?: string;
+    availability?: string[];
     // ...other properties
     // role: UserRole;
   }
@@ -46,6 +50,8 @@ export const authOptions: NextAuthOptions = {
         session.user.id = user.id;
         session.user.registrationFinished = user.registrationFinished;
         session.user.location = user.location;
+        session.user.department = user.department;
+        session.user.availability = user.availability;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
