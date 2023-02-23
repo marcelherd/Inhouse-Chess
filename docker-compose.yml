@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  app:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    image: inhouse-chess
+    environment:
+      - DATABASE_URL=database_url_goes_here
+      - NEXTAUTH_SECRET=openssl rand -base64 32
+      - NEXTAUTH_URL=http://localhost:3000
+      - DISCORD_CLIENT_ID=client_id_goes_here
+      - DISCORD_CLIENT_SECRET=client_secret_goes_here

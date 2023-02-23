@@ -22,7 +22,10 @@ export const Link: React.FC<LinkProps> = ({
   const { data: session } = useSession();
   const { classes, cx } = useStyles();
 
-  const active = href === router.pathname;
+  // TODO(marcelherd): This is an ugly hack to avoid using getServerSideProps.
+  //    See also: https://github.com/t3-oss/create-t3-app/issues/992#issuecomment-1404043116
+  const url = href.replace(":id", session?.user.id ?? "");
+  const active = url === router.pathname;
 
   if (requiresAuthentication && !session) return null;
 
@@ -30,7 +33,7 @@ export const Link: React.FC<LinkProps> = ({
     <Text<"a">
       component="a"
       className={cx(classes.link, { [classes.active]: active })}
-      href={href}
+      href={url}
       key={label}
     >
       <Icon className={classes.linkIcon} stroke={1.5} />
