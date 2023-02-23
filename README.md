@@ -16,6 +16,7 @@ pnpm dev              # Run application
 Via Docker Compose:
 
 ```sh
+vi docker-compose.yml   # Set environment variables
 docker compose up
 ```
 
