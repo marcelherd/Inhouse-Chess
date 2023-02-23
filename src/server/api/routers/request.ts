@@ -127,33 +127,24 @@ export const requestRouter = createTRPCRouter({
 
       const { receivedBy, submittedBy, proposedWinnerId } = request;
 
-      // I know
-      const winner =
+      // From the perspective of the player (submittedBy)
+      const result =
         proposedWinnerId === null
-          ? null
-          : proposedWinnerId === receivedBy.id
-          ? receivedBy
-          : submittedBy;
+          ? 0.5
+          : proposedWinnerId === submittedBy.id
+          ? 1
+          : 0;
 
-      // TODO(marcelherd): This is far from ideal.
-      //    Once we switch to a different algorithm to calculate rating adjustments,
-      //    this API should be adjusted so that there is an easy way to get the rating
-      //    adjustment for both players.
-      const ratingAdjustment = calculateRatingAdjustment(
-        receivedBy,
-        submittedBy,
-        winner
+      const {
+        newPlayerRating,
+        newOpponentRating,
+        playerRatingAdjustment,
+        opponentRatingAdjustment,
+      } = calculateRatingAdjustment(
+        submittedBy.rating,
+        receivedBy.rating,
+        result
       );
-      const playerRatingAdjustment = !winner
-        ? ratingAdjustment
-        : request.submittedById === winner.id
-        ? ratingAdjustment
-        : -ratingAdjustment;
-      const opponentRatingAdjustment = !winner
-        ? ratingAdjustment
-        : request.receivedById === winner.id
-        ? ratingAdjustment
-        : -ratingAdjustment;
 
       // Commit the game
       const game = await ctx.prisma.game.create({
@@ -172,38 +163,34 @@ export const requestRouter = createTRPCRouter({
         },
       });
 
+      const playerHighestRating =
+        newPlayerRating > submittedBy.highestRating
+          ? newPlayerRating
+          : submittedBy.highestRating;
+
       // Update the player's ratings
       await ctx.prisma.user.update({
         where: {
           id: request.submittedById,
         },
         data: {
-          rating:
-            request.submittedById === request.proposedWinnerId
-              ? submittedBy.rating + ratingAdjustment
-              : submittedBy.rating - ratingAdjustment,
-          highestRating:
-            request.submittedById === request.proposedWinnerId &&
-            submittedBy.rating + ratingAdjustment > submittedBy.highestRating
-              ? submittedBy.rating + ratingAdjustment
-              : submittedBy.highestRating,
+          rating: newPlayerRating,
+          highestRating: playerHighestRating,
         },
       });
+
+      const opponentHighestRating =
+        newOpponentRating > receivedBy.highestRating
+          ? newOpponentRating
+          : receivedBy.highestRating;
 
       await ctx.prisma.user.update({
         where: {
           id: request.receivedById,
         },
         data: {
-          rating:
-            request.receivedById === request.proposedWinnerId
-              ? receivedBy.rating + ratingAdjustment
-              : receivedBy.rating - ratingAdjustment,
-          highestRating:
-            request.receivedById === request.proposedWinnerId &&
-            receivedBy.rating + ratingAdjustment > receivedBy.highestRating
-              ? receivedBy.rating + ratingAdjustment
-              : receivedBy.highestRating,
+          rating: newOpponentRating,
+          highestRating: opponentHighestRating,
         },
       });
 
