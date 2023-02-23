@@ -90,7 +90,7 @@ export const Leaderboard: React.FC = () => {
         {isDesktop && <td>{wins}</td>}
         {isDesktop && <td>{losses}</td>}
         {isDesktop && <td>{draws}</td>}
-        <td>{isNaN(winrate) ? "N/A" : `${winrate}%`}</td>
+        <td>{isNaN(winrate) ? "N/A" : `${winrate.toFixed(0)}%`}</td>
       </tr>
     );
   });
