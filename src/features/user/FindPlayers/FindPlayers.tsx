@@ -61,7 +61,7 @@ export const FindPlayers: React.FC = () => {
           }}
         />
         <Text color="dimmed" size="sm">
-          {total} other players at your location
+          {total} other {total === 1 ? "player" : "players"} at your location
         </Text>
       </Flex>
 
